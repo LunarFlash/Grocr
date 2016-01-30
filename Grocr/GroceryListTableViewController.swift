@@ -31,6 +31,8 @@ class GroceryListTableViewController: UITableViewController {
   var items = [GroceryItem]()
   var user: User!
   var userCountBarButtonItem: UIBarButtonItem!
+    
+  let ref = Firebase(url: "https://scorching-inferno-7062.firebaseio.com/grocery-items")
   
   // MARK: UIViewController Lifecycle
   
