@@ -33,6 +33,8 @@ class GroceryListTableViewController: UITableViewController {
     var userCountBarButtonItem: UIBarButtonItem!
     
     // Firebase properties are referred to as references because they refer to a location in your Firebase database.
+    
+    // In short, this property allows for saving and syncing of data to the given location.
     let ref = Firebase(url: "\(BASE_URL)/grocery-items")
     
     // MARK: UIViewController Lifecycle
@@ -119,17 +121,25 @@ class GroceryListTableViewController: UITableViewController {
     
     @IBAction func addButtonDidTouch(sender: AnyObject) {
         // Alert View for input
-        var alert = UIAlertController(title: "Grocery Item",
+        let alert = UIAlertController(title: "Grocery Item",
             message: "Add an Item",
             preferredStyle: .Alert)
         
         let saveAction = UIAlertAction(title: "Save",
             style: .Default) { (action: UIAlertAction) -> Void in
                 
-                let textField = alert.textFields![0]
+                // Get the text field from the alert controller.
+                let textField = alert.textFields![0] 
+                
+                // Using the current user’s data, create a new GroceryItem that is not completed by default.
                 let groceryItem = GroceryItem(name: textField.text!, addedByUser: self.user.email, completed: false)
-                self.items.append(groceryItem)
-                self.tableView.reloadData()
+                
+                // Create a child reference using childByAppendingPath(_:). The key value of this reference is the item’s name in lowercase, so when users add duplicate items — even if they capitalize it, or use mixed case — the database saves only the latest entry.
+                let groceryItemRef = self.ref.childByAppendingPath(textField.text!.lowercaseString)
+                
+                // Use setValue(_:) to save data to the database. This method expects a dictionary. GroceryItem has a helper function to turn it into a dictionary called toAnyObject().
+                groceryItemRef.setValue(groceryItem.toAnyObject())
+                
         }
         
         let cancelAction = UIAlertAction(title: "Cancel",

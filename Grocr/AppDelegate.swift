@@ -16,6 +16,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     super.init()
     Firebase.defaultConfig().persistenceEnabled = true
   }
+    
+    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject : AnyObject]?) -> Bool {
+        
+        
+        
+        
+        
+        return true
+    }
 
 }
 
