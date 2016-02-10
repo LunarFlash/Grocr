@@ -38,6 +38,9 @@ class GroceryListTableViewController: UITableViewController {
         super.viewDidAppear(animated)
         
         // Here you’ve added an observer that executes the given closure whenever the value that ref points to is changed.
+        
+        // The app is notified of the change via a closure, which is passed an instance FDataSnapshot. The snapshot, as its name suggests, represents the data at that specific moment in time. To access the data in the snapshot, you use the value property.
+        
         ref.observeEventType(FEventType.Value, withBlock: { (snapshot) -> Void in
             
             print(snapshot.value)
