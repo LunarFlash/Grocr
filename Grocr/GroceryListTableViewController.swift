@@ -104,8 +104,12 @@ class GroceryListTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
             // Find the snapshot and remove the value
-            items.removeAtIndex(indexPath.row)
-            tableView.reloadData()
+            
+            // Firebase follows a unidirectional data flow model, so the listener in viewWillAppear(_:) notifies the app of the latest value of the grocery list. A removal of an item triggers a value change.
+            // The index path’s row is used to retrieve the corresponding grocery item. Each GroceryItem has a Firebase reference property named ref, and calling removeValue() on that reference causes the listener in viewDidLoad() to fire. The listener has a closure attached that reloads the table view using the latest data.
+            let groceryItem = items[indexPath.row]
+            groceryItem.ref?.removeValue()
+            
         }
     }
     
