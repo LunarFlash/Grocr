@@ -114,14 +114,21 @@ class GroceryListTableViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        // Find the cell the user tapped using cellForRowAtIndexPath(_:).
         let cell = tableView.cellForRowAtIndexPath(indexPath)!
-        var groceryItem = items[indexPath.row]
+        // Get the corresponding GroceryItem by using the index path’s row.
+        let groceryItem = items[indexPath.row]
+        
+        // Negate completed on the grocery item to toggle the status.
         let toggledCompletion = !groceryItem.completed
         
-        // Determine whether the cell is checked
+        // Call toggleCellCheckbox() update the visual properties of the cell.
         toggleCellCheckbox(cell, isCompleted: toggledCompletion)
-        groceryItem.completed = toggledCompletion
-        tableView.reloadData()
+       
+        // Use updateChildValues(_:), passing a dictionary, to update Firebase. This method is different than setValue(_:) because it only applies updates, whereas setValue(_:) is destructive and replaces the entire value at that reference.
+        groceryItem.ref?.updateChildValues([
+            "completed": toggledCompletion
+            ])
     }
     
     func toggleCellCheckbox(cell: UITableViewCell, isCompleted: Bool) {
