@@ -57,7 +57,11 @@ class GroceryListTableViewController: UITableViewController {
         
         
         
-        
+        ref.observeAuthEventWithBlock { authData in
+            if authData != nil {
+                self.user = User(authData: authData)
+            }
+        }
         
         
         /*
