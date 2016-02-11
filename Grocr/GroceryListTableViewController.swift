@@ -42,6 +42,26 @@ class GroceryListTableViewController: UITableViewController {
         // The app is notified of the change via a closure, which is passed an instance FDataSnapshot. The snapshot, as its name suggests, represents the data at that specific moment in time. To access the data in the snapshot, you use the value property.
         
         
+        
+        
+        ref.queryOrderedByChild("completed").observeEventType(.Value, withBlock: { snapshot in
+            var newItems = [GroceryItem]()
+            for item in snapshot.children {
+                let groceryItem = GroceryItem(snapshot: item as! FDataSnapshot)
+                newItems.append(groceryItem)
+            }
+            self.items = newItems
+            self.tableView.reloadData()
+        })
+        
+        
+        
+        
+        
+        
+        
+        /*
+        
         // Attach a listener to receive updates whenever the grocery-items endpoint is modified.
         ref.observeEventType(FEventType.Value, withBlock: { (snapshot) -> Void in
             
@@ -68,7 +88,7 @@ class GroceryListTableViewController: UITableViewController {
             }) { (error) -> Void in
             print(error.description)
         }
-        
+        */
         
         
     }
