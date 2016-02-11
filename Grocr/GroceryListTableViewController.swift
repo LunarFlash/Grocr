@@ -41,9 +41,29 @@ class GroceryListTableViewController: UITableViewController {
         
         // The app is notified of the change via a closure, which is passed an instance FDataSnapshot. The snapshot, as its name suggests, represents the data at that specific moment in time. To access the data in the snapshot, you use the value property.
         
+        
+        // Attach a listener to receive updates whenever the grocery-items endpoint is modified.
         ref.observeEventType(FEventType.Value, withBlock: { (snapshot) -> Void in
             
             print(snapshot.value)
+            
+            // Store the latest version of the data in a local variable inside the listener’s closure.
+            var newItems = [GroceryItem]()
+            
+            // The listener’s closure returns a snapshot of the latest set of data. The snapshot contains the entire list of grocery items, not just the updates. Using children, you loop through the grocery items.
+            for item in snapshot.children {
+                
+                // The GroceryItem struct has an initializer that populates its properties using a FDataSnapshot. A snapshot’s value is of type AnyObject, and can be a dictionary, array, number, or string. After creating an instance of GroceryItem, it’s added it to the array that contains the latest version of the data.
+                let groceryItem = GroceryItem(snapshot: item as! FDataSnapshot)
+                newItems.append(groceryItem)
+                
+                // Reassign items to the latest version of the data, then reload the table view so it displays the latest version.
+                self.items = newItems
+                self.tableView.reloadData()
+                
+            }
+            
+            
             
             }) { (error) -> Void in
             print(error.description)
