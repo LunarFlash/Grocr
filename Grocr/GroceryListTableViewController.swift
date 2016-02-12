@@ -17,6 +17,10 @@ class GroceryListTableViewController: UITableViewController {
     // In short, this property allows for saving and syncing of data to the given location.
     let ref = Firebase(url: "\(BASE_URL)/grocery-items")
     
+    // This is a Firebase reference that points to an online location that stores a list of online users.
+    let usersRef = Firebase(url: "\(BASE_URL)/online")
+    
+    
     // MARK: UIViewController Lifecycle
     
     override func viewDidLoad() {
@@ -31,7 +35,6 @@ class GroceryListTableViewController: UITableViewController {
         userCountBarButtonItem.tintColor = UIColor.whiteColor()
         navigationItem.leftBarButtonItem = userCountBarButtonItem
         
-        user = User(uid: "FakeId", email: "hungry@person.food")
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -56,12 +59,37 @@ class GroceryListTableViewController: UITableViewController {
         
         
         
-        
+        // Here we attach an authentication observer to the Firebase reference, that in turn assigns the user property when a user successfully signs in.
         ref.observeAuthEventWithBlock { authData in
             if authData != nil {
                 self.user = User(authData: authData)
+                
+                // Create a child reference using a user’s uid, which is generated when Firebase creates an account.
+                let currentUserRef = self.usersRef.childByAppendingPath(self.user.uid)
+                
+                // Use this reference to save the current user’s email.
+                currentUserRef.setValue(self.user.email)
+                
+                // Call onDisconnectRemoveValue() on currentUserRef. This removes the value at the reference’s location after the connection to Firebase closes, for instance when a user quits your app. This is perfect for monitoring users who have gone offline.
+                currentUserRef.onDisconnectRemoveValue()
+                
             }
         }
+        
+        // observe users list
+        usersRef.observeEventType(FEventType.Value) { (snapshot:FDataSnapshot!) -> Void in
+            
+            if snapshot.exists() == true{
+                // value changed
+                self.userCountBarButtonItem.title = snapshot.childrenCount.description
+            } else {
+                self.userCountBarButtonItem.title = "0"
+            }
+            
+        }
+        
+        
+        
         
         
         /*
